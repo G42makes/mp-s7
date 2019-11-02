@@ -22,20 +22,44 @@ target_include_directories(RetroConsole PUBLIC .)
 
 install(TARGETS RetroConsole  DESTINATION lib)
 
+#micropython/lib/utils - library
+add_library(mp_lib_utils
+        ../micropython/lib/utils/stdout_helpers.c
+	)
+target_include_directories(mp_lib_utils PUBLIC
+	../micropython/
+	../micropython/ports/minimal/build/
+	./
+	)
 
-#App parts
-
-file(GLOB micropython_py_SRC
-	"../micropython/py/*.h"
-	"../micropython/py/*.c"
-	../micropython/lib/utils/stdout_helpers.c
-	../micropython/ports/minimal/build/_frozen_mpy.c
+#micropython/py - main codebase
+file(GLOB mp_py_SRC
+        "../micropython/py/*.c"
+        ../micropython/lib/utils/stdout_helpers.c		#TODO: can I get rid of this line?
+        ../micropython/ports/minimal/build/_frozen_mpy.c
 	mpconfigport.h
 	mphalport.h
 	stringio.c
+	)
+add_library(mp_py ${mp_py_SRC})
+target_include_directories(mp_py PUBLIC
+	../micropython/
+        ../micropython/ports/minimal/build/
+        ./
+        )
+
+
+#App parts
+
+file(GLOB micropython_SRC
+	#../micropython/ports/minimal/build/_frozen_mpy.c
+	mpconfigport.h
+	mphalport.h
+	mphalport.c
+	stringio.c
 	main.c
 	)
-add_application(MPTests ${micropython_py_SRC})
+add_application(MPTests ${micropython_SRC})
 
 target_include_directories(MPTests
         PUBLIC ../micropython/
@@ -45,6 +69,8 @@ target_include_directories(MPTests
 
 target_link_libraries(MPTests 
 	RetroConsole
+	mp_lib_utils
+	mp_py
 	#	MP
 	)
 
