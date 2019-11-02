@@ -7,6 +7,8 @@
 // will still be able to execute pre-compiled scripts, compiled with mpy-cross.
 #define MICROPY_ENABLE_COMPILER     (1)
 
+#define MICROPY_ENABLE_EXTERNAL_IMPORT (0)	//removed for first compile. TODO remove this line to default to enabled
+
 #define MICROPY_QSTR_BYTES_IN_HASH  (1)
 #define MICROPY_QSTR_EXTRA_POOL     mp_qstr_frozen_const_pool
 #define MICROPY_ALLOC_PATH_MAX      (256)
@@ -74,6 +76,7 @@ typedef unsigned mp_uint_t; // must be pointer size
 typedef long mp_off_t;
 
 #define MP_PLAT_PRINT_STRN(str, len) mp_hal_stdout_tx_strn_cooked(str, len)
+//TODO: make the above call to a new function that will deal with macos linefeeds
 
 // extra built in names to add to the global namespace
 #define MICROPY_PORT_BUILTINS \

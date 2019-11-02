@@ -1,3 +1,4 @@
+//#include "retro/Console.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,7 +8,7 @@
 #include "py/repl.h"
 #include "py/gc.h"
 #include "py/mperrno.h"
-#include "lib/utils/pyexec.h"
+#include "lib/utils/pyexec.h" 
 
 #if MICROPY_ENABLE_COMPILER
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
@@ -31,7 +32,15 @@ static char *stack_top;
 static char heap[2048];
 #endif
 
-int main(int argc, char **argv) {
+/*
+namespace retro
+{
+    void InitConsole();
+}
+*/
+
+int main()
+{
     int stack_dummy;
     stack_top = (char*)&stack_dummy;
 
@@ -39,25 +48,21 @@ int main(int argc, char **argv) {
     gc_init(heap, heap + sizeof(heap));
     #endif
     mp_init();
-    #if MICROPY_ENABLE_COMPILER
-    #if MICROPY_REPL_EVENT_DRIVEN
-    pyexec_event_repl_init();
-    for (;;) {
-        int c = mp_hal_stdin_rx_chr();
-        if (pyexec_event_repl_process_char(c)) {
-            break;
-        }
-    }
-    #else
-    pyexec_friendly_repl();
-    #endif
-    //do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
-    //do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
-    #else
-    pyexec_frozen_module("frozentest.py");
-    #endif
-    mp_deinit();
+
+/*
+    retro::InitConsole();
+    std::string out = "Hello, world.\nEnter \"exit\" to quit.\n";
+    retro::Console::currentInstance->write(out.data(), out.size());
+
+    std::string in;
+    do
+    {
+        in = retro::Console::currentInstance->ReadLine();
+        out = "You Entered: " + in;
+        retro::Console::currentInstance->write(out.data(), out.size());
+    } while(in != "exit\n");
     return 0;
+*/
 }
 
 void gc_collect(void) {
@@ -97,4 +102,3 @@ void MP_WEAK __assert_func(const char *file, int line, const char *func, const c
     __fatal_error("Assertion failed");
 }
 #endif
-
