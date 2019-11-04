@@ -40,6 +40,7 @@ namespace retro
 
         void write(const char *s, int n);
         std::string ReadLine();
+	char ReadChar();
 
         static Console *currentInstance;
 

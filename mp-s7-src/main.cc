@@ -98,6 +98,7 @@ extern "C" void gc_collect(void) {
 // Receive single character
 int mp_hal_stdin_rx_chr(void) {
     unsigned char c = 0;
+    c = retro::Console::currentInstance->ReadChar();
     return c;
 }
 

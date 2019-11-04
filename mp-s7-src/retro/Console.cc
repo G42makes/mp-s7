@@ -326,6 +326,27 @@ std::string Console::ReadLine()
     return buffer;
 }
 
+char Console::ReadChar()
+{
+    if(!consolePort)
+        return 0;
+
+    char c;
+
+    c = WaitNextChar();
+    if(!c)
+    {
+        eof = true;
+        return 0;
+    }
+
+    if(c == '\r')
+        c = '\n';
+
+    putch(c);
+    return c;
+}
+
 void Console::InvalidateCursor()
 {
     if(cursorDrawn)
