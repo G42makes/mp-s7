@@ -343,7 +343,6 @@ char Console::ReadChar()
     if(c == '\r')
         c = '\n';
 
-    putch(c);
     return c;
 }
 
