@@ -1,6 +1,5 @@
-
-# Created by https://www.gitignore.io/api/c,c++,cmake,python
-# Edit at https://www.gitignore.io/?templates=c,c++,cmake,python
+# Created by https://www.gitignore.io/api/c,c++,cmake,python,vim
+# Edit at https://www.gitignore.io/?templates=c,c++,cmake,python,vim
 
 ### C ###
 # Prerequisites
@@ -196,7 +195,28 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# End of https://www.gitignore.io/api/c,c++,cmake,python
+
+### Vim ###
+# Swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+Sessionx.vim
+
+# Temporary
+.netrwhist
+*~
+# Auto-generated tag files
+tags
+# Persistent undo
+[._]*.un~
+
+# End of https://www.gitignore.io/api/c,c++,cmake,python,vim
 
 testcode/
 build/

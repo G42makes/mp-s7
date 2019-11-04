@@ -59,8 +59,8 @@ int main()
 
 
     retro::InitConsole();
-    std::string out = "Hello, world.\nEnter \"exit\" to quit.\n";
-    retro::Console::currentInstance->write(out.data(), out.size());
+    //std::string out = "Hello, world.\nEnter \"exit\" to quit.\n";
+    //retro::Console::currentInstance->write(out.data(), out.size());
 
     pyexec_event_repl_init();
     for (;;) {
@@ -70,6 +70,7 @@ int main()
         }
     }
 
+    /*
     std::string in;
     do
     {
@@ -77,7 +78,7 @@ int main()
         out = "You Entered: " + in;
         retro::Console::currentInstance->write(out.data(), out.size());
     } while(in != "exit\n");
-
+    */
 
     mp_deinit();
     return 0;
@@ -93,3 +94,17 @@ extern "C" void gc_collect(void) {
     gc_collect_end();
     gc_dump_info();
 }
+
+// Receive single character
+int mp_hal_stdin_rx_chr(void) {
+    unsigned char c = 0;
+    return c;
+}
+
+// Send string of given length
+void mp_hal_stdout_tx_strn(const char *str, mp_uint_t len) {
+    //int r = write(1, str, len);
+    retro::Console::currentInstance->write(str, len);
+    //(void)r;
+}
+
