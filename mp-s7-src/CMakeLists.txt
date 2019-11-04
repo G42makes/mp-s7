@@ -25,12 +25,23 @@ install(TARGETS RetroConsole  DESTINATION lib)
 #micropython/lib/utils - library
 add_library(mp_lib_utils
         ../micropython/lib/utils/stdout_helpers.c
+	../micropython/lib/utils/pyexec.h
+	../micropython/lib/utils/pyexec.c
 	)
 target_include_directories(mp_lib_utils PUBLIC
 	../micropython/
 	../micropython/ports/minimal/build/
 	./
 	)
+add_library(mp_lib_readline
+	../micropython/lib/mp-readline/readline.h
+	../micropython/lib/mp-readline/readline.c
+	)
+target_include_directories(mp_lib_readline PUBLIC
+        ../micropython/
+        ../micropython/ports/minimal/build/
+        ./
+        )
 
 #micropython/py - main codebase
 file(GLOB mp_py_SRC
@@ -39,7 +50,7 @@ file(GLOB mp_py_SRC
         ../micropython/ports/minimal/build/_frozen_mpy.c
 	mpconfigport.h
 	mphalport.h
-	stringio.c
+	stringio.cc
 	)
 add_library(mp_py ${mp_py_SRC})
 target_include_directories(mp_py PUBLIC
@@ -56,8 +67,8 @@ file(GLOB micropython_SRC
 	mpconfigport.h
 	mphalport.h
 	mphalport.c
-	stringio.c
-	main.c
+	stringio.cc
+	main.cc
 	)
 add_application(MPTests ${micropython_SRC})
 
@@ -70,7 +81,7 @@ target_include_directories(MPTests
 target_link_libraries(MPTests 
 	RetroConsole
 	mp_lib_utils
+	mp_lib_readline
 	mp_py
-	#	MP
 	)
 

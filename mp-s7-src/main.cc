@@ -1,7 +1,11 @@
-//#include "retro/Console.h"
+#include "retro/Console.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+
+//Here we start to merge the C code from the MP minimal example with the C++ code from the Retro68 Console example
+extern "C" {
 
 #include "py/compile.h"
 #include "py/runtime.h"
@@ -9,6 +13,11 @@
 #include "py/gc.h"
 #include "py/mperrno.h"
 #include "lib/utils/pyexec.h" 
+
+}
+
+extern "C" int mp_hal_stdin_rx_chr(void);
+extern "C" void mp_hal_stdout_tx_strn(const char *str, mp_uint_t len);
 
 #if MICROPY_ENABLE_COMPILER
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
@@ -32,12 +41,11 @@ static char *stack_top;
 static char heap[2048];
 #endif
 
-/*
+
 namespace retro
 {
     void InitConsole();
 }
-*/
 
 int main()
 {
@@ -49,10 +57,18 @@ int main()
     #endif
     mp_init();
 
-/*
+
     retro::InitConsole();
     std::string out = "Hello, world.\nEnter \"exit\" to quit.\n";
     retro::Console::currentInstance->write(out.data(), out.size());
+
+    pyexec_event_repl_init();
+    for (;;) {
+        int c = mp_hal_stdin_rx_chr();
+        if (pyexec_event_repl_process_char(c)) {
+            break;
+        }
+    }
 
     std::string in;
     do
@@ -61,11 +77,14 @@ int main()
         out = "You Entered: " + in;
         retro::Console::currentInstance->write(out.data(), out.size());
     } while(in != "exit\n");
+
+
+    mp_deinit();
     return 0;
-*/
+
 }
 
-void gc_collect(void) {
+extern "C" void gc_collect(void) {
     // WARNING: This gc_collect implementation doesn't try to get root
     // pointers from CPU registers, and thus may function incorrectly.
     void *dummy;
@@ -74,4 +93,3 @@ void gc_collect(void) {
     gc_collect_end();
     gc_dump_info();
 }
-
