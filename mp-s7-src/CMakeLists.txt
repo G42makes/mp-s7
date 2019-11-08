@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(MPTests VERSION 0.1 LANGUAGES C CXX)
+project(MPTests VERSION 0.0.1 LANGUAGES C CXX)
 
 add_library(RetroConsole
     retro/Console.cc

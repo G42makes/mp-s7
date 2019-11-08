@@ -10,3 +10,5 @@ Had to compile the minimal to get a few of the generated headers made for me unt
 Updated the Retro68 Console example to allow reading single characters.
 
 And now I can run python. The REPL works, even can create functions.
+
+- V0.0.1: "It Barely Works"

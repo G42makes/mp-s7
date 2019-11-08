@@ -7,4 +7,5 @@ Items that I should do/would be nice to have.
 
 Fantasy category, for now:
 - Add an editor.
+- support FrameBuffer module
 
