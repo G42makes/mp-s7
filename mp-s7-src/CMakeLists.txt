@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(MPTests VERSION 0.0.1 LANGUAGES C CXX)
+project(MicroPython VERSION 0.0.1 LANGUAGES C CXX)
 
 add_library(RetroConsole
     retro/Console.cc
@@ -70,15 +70,15 @@ file(GLOB micropython_SRC
 	stringio.cc
 	main.cc
 	)
-add_application(MPTests ${micropython_SRC})
+add_application(MicroPython ${micropython_SRC})
 
-target_include_directories(MPTests
+target_include_directories(MicroPython
         PUBLIC ../micropython/
 	../micropython/ports/minimal/build/
         ./
     )
 
-target_link_libraries(MPTests 
+target_link_libraries(MicroPython 
 	RetroConsole
 	mp_lib_utils
 	mp_lib_readline
