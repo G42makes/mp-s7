@@ -340,9 +340,6 @@ char Console::ReadChar()
         return 0;
     }
 
-    if(c == '\r')
-        c = '\n';
-
     return c;
 }
 
