@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(MicroPython VERSION 0.0.1 LANGUAGES C CXX)
 
+#Retro68 Console library - modififed
 add_library(RetroConsole
     retro/Console.cc
     retro/Console.h
@@ -33,6 +34,8 @@ target_include_directories(mp_lib_utils PUBLIC
 	../micropython/ports/minimal/build/
 	./
 	)
+
+#micropython/lib/mp-readline - library
 add_library(mp_lib_readline
 	../micropython/lib/mp-readline/readline.h
 	../micropython/lib/mp-readline/readline.c
