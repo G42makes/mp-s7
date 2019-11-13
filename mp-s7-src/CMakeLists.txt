@@ -1,9 +1,19 @@
 cmake_minimum_required(VERSION 3.0)
 project(MicroPython VERSION 0.0.1 LANGUAGES C CXX)
 
+find_package(PythonInterp)
+
 #Create a location to store the generated header files
 #Ref: https://stackoverflow.com/a/3702233
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/genhdr)
+
+#Generage the MP version header file:
+add_custom_target(
+ gen_mpversion ALL
+ COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../micropython/py/makeversionhdr.py ${PROJECT_BINARY_DIR}/genhdr/mpversion.h
+ BYPRODUCTS ${PROJECT_BINARY_DIR}/genhdr/mpversion.h
+ COMMENT "Generating mpversion.h"
+)
 
 #Retro68 Console library - modififed
 add_library(RetroConsole
@@ -54,7 +64,7 @@ target_include_directories(mp_lib_readline PUBLIC
 file(GLOB mp_py_SRC
         "../micropython/py/*.c"
         ../micropython/lib/utils/stdout_helpers.c		#TODO: can I get rid of this line?
-        ../micropython/ports/minimal/build/_frozen_mpy.c
+	#../micropython/ports/minimal/build/_frozen_mpy.c
 	mpconfigport.h
 	mphalport.h
 	stringio.cc
@@ -81,9 +91,13 @@ add_application(MicroPython ${micropython_SRC})
 
 target_include_directories(MicroPython
         PUBLIC ../micropython/
+	./
 	../micropython/ports/minimal/build/
-        ./
     )
+
+add_dependencies(MicroPython 
+	gen_mpversion
+	)
 
 target_link_libraries(MicroPython 
 	RetroConsole
