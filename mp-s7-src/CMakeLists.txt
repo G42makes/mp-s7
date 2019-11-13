@@ -65,7 +65,16 @@ add_custom_target(
  	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstr.split
 )
 
-
+#Generate qstrdefs.collected.h.hash
+add_custom_command(
+        OUTPUT ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h.hash
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../micropython/py/makeqstrdefs.py cat ${PROJECT_BINARY_DIR}/genhdr/qstr.i.last ${PROJECT_BINARY_DIR}/genhdr/qstr ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h
+        DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstr.i.last
+        )
+add_custom_target(
+        gen_qstr_cat ALL
+        DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h.hash
+)
 
 #Retro68 Console library - modififed
 add_library(RetroConsole
@@ -153,6 +162,7 @@ add_dependencies(MicroPython
 	gen_qstr_i_last		#TODO: make this a dependency of later qstr steps
 	gen_qstr_split
 	touch_qstr_split
+	gen_qstr_cat
 	)
 
 target_link_libraries(MicroPython 
