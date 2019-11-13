@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 project(MicroPython VERSION 0.0.1 LANGUAGES C CXX)
 
+#Create a location to store the generated header files
+#Ref: https://stackoverflow.com/a/3702233
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/genhdr)
+
 #Retro68 Console library - modififed
 add_library(RetroConsole
     retro/Console.cc
