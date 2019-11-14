@@ -1,5 +1,5 @@
 Next Steps:
-1. Generate headers from cmake file instead of compiling the example
+1. ~~Generate headers from cmake file instead of compiling the example~~
 2. Get the code reading files from filesystem
 3. Open and execute a fiel from the OS
 4. Build/Find a good test.py file to verify features as they are added.
