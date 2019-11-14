@@ -50,7 +50,7 @@ add_custom_command(
 	)
 add_custom_target(
  	gen_qstr_split ALL
- 	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstr
+ 	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstr ${PROJECT_BINARY_DIR}/genhdr/qstr.i.last
 )
 
 #Touch qstr.split
@@ -62,19 +62,42 @@ add_custom_command(
 	)
 add_custom_target(
  	touch_qstr_split ALL
- 	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstr.split
+ 	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstr.split ${PROJECT_BINARY_DIR}/genhdr/qstr
 )
 
 #Generate qstrdefs.collected.h.hash
 add_custom_command(
         OUTPUT ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h.hash
         COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../micropython/py/makeqstrdefs.py cat ${PROJECT_BINARY_DIR}/genhdr/qstr.i.last ${PROJECT_BINARY_DIR}/genhdr/qstr ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h
-        DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstr.i.last
+        DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstr.split
         )
 add_custom_target(
         gen_qstr_cat ALL
-        DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h.hash
+        DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h.hash ${PROJECT_BINARY_DIR}/genhdr/qstr.i.last
 )
+
+#Generate pre-processed header
+#TODO this command generates some errors in CMake, runs fine, but errors out.
+add_custom_command(
+	OUTPUT ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.preprocessed.h
+	COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/../micropython/py/qstrdefs.h ${CMAKE_CURRENT_SOURCE_DIR}/qstrdefsport.h ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h | sed 's/^Q(.*)/\"&\"/' | ${CMAKE_C_COMPILER} -E -DNO_QSTR -Ibuild/tmp -I${CMAKE_CURRENT_SOURCE_DIR} -I${CMAKE_CURRENT_SOURCE_DIR}/../micropython -I${PROJECT_BINARY_DIR} -Wall -Werror -std=c99 -Os -DNDEBUG -fdata-sections -ffunction-sections - | sed 's/^\\\"\\\(Q(.*)\\\)\\\"/\\1/' > ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.preprocessed.h
+	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h.hash
+	)
+add_custom_target(
+	gen_qstr_preprocessed ALL
+	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.preprocessed.h ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.collected.h.hash
+)
+
+#Generate final qstr header
+add_custom_command(
+	OUTPUT ${PROJECT_BINARY_DIR}/genhdr/genhdr/qstrdefs.generated.h
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../micropython/py/makeqstrdata.py ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.preprocessed.h > ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.generated.h
+	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.preprocessed.h
+	)
+add_custom_target(
+	gen_qstr_generated ALL
+	DEPENDS ${PROJECT_BINARY_DIR}/genhdr/genhdr/qstrdefs.generated.h ${PROJECT_BINARY_DIR}/genhdr/qstrdefs.preprocessed.h
+	)
 
 #Retro68 Console library - modififed
 add_library(RetroConsole
@@ -106,7 +129,7 @@ add_library(mp_lib_utils
 	)
 target_include_directories(mp_lib_utils PUBLIC
 	../micropython/
-	../micropython/ports/minimal/build/
+	${PROJECT_BINARY_DIR}
 	./
 	)
 
@@ -117,7 +140,7 @@ add_library(mp_lib_readline
 	)
 target_include_directories(mp_lib_readline PUBLIC
         ../micropython/
-        ../micropython/ports/minimal/build/
+	${PROJECT_BINARY_DIR}
         ./
         )
 
@@ -125,7 +148,7 @@ target_include_directories(mp_lib_readline PUBLIC
 file(GLOB mp_py_SRC
         "../micropython/py/*.c"
         ../micropython/lib/utils/stdout_helpers.c		#TODO: can I get rid of this line?
-	#../micropython/ports/minimal/build/_frozen_mpy.c
+	${PROJECT_BINARY_DIR}
 	mpconfigport.h
 	mphalport.h
 	stringio.cc
@@ -133,7 +156,7 @@ file(GLOB mp_py_SRC
 add_library(mp_py ${mp_py_SRC})
 target_include_directories(mp_py PUBLIC
 	../micropython/
-        ../micropython/ports/minimal/build/
+	${PROJECT_BINARY_DIR}
         ./
         )
 
@@ -153,7 +176,7 @@ add_application(MicroPython ${micropython_SRC})
 target_include_directories(MicroPython
         PUBLIC ../micropython/
 	./
-	../micropython/ports/minimal/build/
+	${PROJECT_BINARY_DIR}
     )
 
 add_dependencies(MicroPython 
@@ -163,6 +186,8 @@ add_dependencies(MicroPython
 	gen_qstr_split
 	touch_qstr_split
 	gen_qstr_cat
+	gen_qstr_preprocessed
+	gen_qstr_generated
 	)
 
 target_link_libraries(MicroPython 
