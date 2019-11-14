@@ -12,3 +12,5 @@ Updated the Retro68 Console example to allow reading single characters.
 And now I can run python. The REPL works, even can create functions.
 
 - V0.0.1: "It Barely Works"
+
+Onward, let's get those generated QSTR headers done inside our CMake file. It's ugly, but it's working. Needs cleanup/refactor/extracting to it's own file.
